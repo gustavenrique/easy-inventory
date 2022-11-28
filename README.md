@@ -1,4 +1,4 @@
-# Easy Inventory
+# Stoquei
 
 Simple web app for stock management
 

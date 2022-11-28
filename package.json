@@ -1,5 +1,5 @@
 {
-  "name": "easy-inventory",
+  "name": "stoquei",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -11,6 +11,7 @@
     "axios": "^1.2.0",
     "js-sha256": "^0.9.0",
     "vue": "^3.2.45",
+    "vue-cookies": "^1.8.2",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {

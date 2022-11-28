@@ -6,14 +6,14 @@ import Navbar from './components/TheNavbar.vue'
 <template>
   <div class="d-flex flex-column">
     <section>
-      <div class="wrapper p-3 bg-dark text-white d-block" style="width: 100vw !important;">
-        <!-- <Navbar msg="You did it!" /> -->
+      <div class="wrapper bg-dark text-white d-block" style="width: 100vw !important;">
+        <Navbar/>
   
-        <nav class="d-block">
+        <!-- <nav class="d-block">
           <RouterLink class="text-white" to="/">Home</RouterLink>
           <span class="mx-3">|</span>
           <RouterLink  class="text-white" to="/about">About</RouterLink>
-        </nav>
+        </nav> -->
       </div>
     </section>
   

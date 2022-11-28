@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/HomeView.vue'
+import Home from '../views/ProductsView.vue'
+import cookies from 'vue-cookies'
 
 const routes = [
     {
-      path: '/', name: 'home', component: Home, 
+      path: '/', alias: ['/home', '/products'], name: 'home', component: Home,
       meta: { requireAuth: true }
     },
     {
@@ -32,7 +33,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
-  if (to.meta.requireAuth && !window.user) {
+  if (to.meta.requireAuth && !cookies.get('username')) {
     return { path: '/login', query: { redirect: to.fullPath } }
   }
 })

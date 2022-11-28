@@ -1,6 +1,7 @@
 <script>
 import axios, * as others from 'axios'
 import { sha256 } from 'js-sha256';
+import cookies from 'vue-cookies'
 
 export default {
     name: 'loginView',
@@ -36,7 +37,7 @@ export default {
         login() {
             this.carregando = true
 
-            axios.post("http://localhost:5025/Usuarios/LogarUsuario", {
+            axios.post("http://localhost:5025/Usuarios/Login", {
                 usuario: this.formulario.username,
                 senha: sha256(this.formulario.password)
             }).then(response => {
@@ -46,7 +47,8 @@ export default {
                     this.mensagem.cor = "success"
                 }
 
-                window.user = this.formulario.username
+                cookies.set('username', this.formulario.username, '30MIN') // user cookie expires after 30min
+
                 this.$router.push(this.$route.query.redirect || '/')
             }).catch(error => {
                 this.mensagem.texto = "Ocorreu um erro ao fazer login! Tente novamente mais tarde."
@@ -65,9 +67,14 @@ export default {
 
 <template>
     <div class="container-fluid bg-secondary d-flex align-items-center justify-content-center flex-column vh-100">
+        
         <form class="form p-4 rounded bg-white" @submit.prevent="login">
-            <h1 class="text-center">Login</h1>
-            
+            <div class="container text-center mb-3 bg-white rounded">
+                <h1 class="text-dark">
+                    <span class="display-4 font-weight-bold">St</span><i class="fas fa-pie-chart"></i><span class="display-4 font-weight-bold">quei</span>
+                </h1>
+            </div>
+
             <div class="form-group">
                 <label for="usuario">Usuário</label>
                 <input v-model='formulario.username' name='usuario' class="form-control" type="text" required>
