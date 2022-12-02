@@ -2,15 +2,13 @@
 import { RouterLink } from 'vue-router'
 import cookies from 'vue-cookies'
 
-$(() => $('[data-toggle="tooltip"]').tooltip())
-
 export default {
   name: 'navbar',
   data: () => ({
     toggleAtivo: false,
   }),
   computed: {
-    isUserLoggedIn() { return cookies.get('username') }
+    userLoggedIn() { return cookies.get('username') }
   },
   methods: {
     trocarDesignToggle() {
@@ -21,7 +19,7 @@ export default {
 </script>
 
 <template>
-    <div v-if='isUserLoggedIn' class="navbar navbar-expand-lg bg-dark">
+    <div v-if='userLoggedIn' class="navbar navbar-expand-lg fixed-top p-3 bg-bg">
         <RouterLink class="navbar-brand text-white d-flex" to="/products">
           <h1>
               <span class="display-5 font-weight-bold">St</span><i class="fas fa-pie-chart pie"></i><span class="display-5 font-weight-bold">quei</span>
@@ -43,21 +41,19 @@ export default {
         <div class="collapse navbar-collapse justify-content-end" id="nav-collapse">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <RouterLink class="m-1 nav-link navbar-link text-uppercase" to="/products">Produtos</RouterLink>
+                    <RouterLink class="m-1 nav-link navbar-link" to="/products">Produtos</RouterLink>
                 </li>
                 <li class="nav-item">
-                    <RouterLink class="m-1 nav-link navbar-link text-uppercase" to="/dashboard">Dashboard</RouterLink>
+                    <RouterLink class="m-1 nav-link navbar-link" to="/dashboard">Dashboard</RouterLink>
                 </li>
                 <li class="nav-item">
-                    <RouterLink class="m-1 nav-link navbar-link text-uppercase" to="/orders">Pedidos</RouterLink>
+                    <RouterLink class="m-1 nav-link navbar-link" to="/orders">Pedidos</RouterLink>
                 </li>
                 <li class="nav-item">
-                    <RouterLink class="m-1 nav-link navbar-link text-uppercase" to="/users">Usuarios</RouterLink>
+                    <RouterLink class="m-1 nav-link navbar-link" to="/users">Usuarios</RouterLink>
                 </li>
                 <li class="nav-item">
-                    <RouterLink class="m-1 full-rounded nav-link menu-item bg-white" to="/my-account">
-                      <i class="fa fa-user text-dark p-1" data-toggle="tooltip" title="Sua Conta"></i>
-                    </RouterLink>
+                    <RouterLink class="m-1 nav-link navbar-link" to="/my-account">Sua Conta</RouterLink>
                 </li>
             </ul>
         </div>

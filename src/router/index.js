@@ -8,11 +8,8 @@ const routes = [
       meta: { requireAuth: true }
     },
     {
-      path: '/about', name: 'about', component: () => import('../views/AboutView.vue'), 
-      meta: { requireAuth: true }
-    },
-    {
-      path: '/login', name: 'login', component: () => import('../views/LoginView.vue')
+      path: '/login', name: 'login', component: () => import('../views/LoginView.vue'),
+      meta: { requireNoAuth: true }
     },
     {
       path: '/:pathMatch(.*)*',
@@ -35,6 +32,8 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   if (to.meta.requireAuth && !cookies.get('username')) {
     return { path: '/login', query: { redirect: to.fullPath } }
+  } else if (to.meta.requireNoAuth && cookies.get('username')) {
+    return { path: '/products' }
   }
 })
 

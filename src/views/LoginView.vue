@@ -7,23 +7,11 @@ export default {
     name: 'loginView',
     props: {},
     data: () => ({
-        formulario: {
-            username: "",
-            password: "",
-            passInputType: "password"
-        },
-        validacao: {
-            campoVazio: false,
-        },
-        usuarioResponse: {
-            objeto: null,
-            mensagem: "",
-        },
+        formulario: { username: "", password: "", passInputType: "password" },
+        validacao: { campoVazio: false },
+        usuarioResponse: { objeto: null, mensagem: "", },
         carregando: false,
-        mensagem: {
-            texto: '',
-            cor: ''
-        }
+        mensagem: { texto: '', cor: '' }
     }),
     computed: {
         icon() {
@@ -31,13 +19,16 @@ export default {
         },
         botaoLoginAtivo() {
             return this.formulario.username && this.formulario.password
+        },
+        senhaCripto() {
+            return sha256(this.formulario.password)
         }
     },
     methods: {
         login() {
             this.carregando = true
 
-            axios.post("http://localhost:5025/Usuarios/Login", {
+            axios.post(`${this.$apiUrl}/Usuarios/Login`, {
                 usuario: this.formulario.username,
                 senha: sha256(this.formulario.password)
             }).then(response => {
@@ -48,10 +39,14 @@ export default {
                 }
 
                 cookies.set('username', this.formulario.username, '30MIN') // user cookie expires after 30min
-
+                this.$router.go()
                 this.$router.push(this.$route.query.redirect || '/')
             }).catch(error => {
-                this.mensagem.texto = "Ocorreu um erro ao fazer login! Tente novamente mais tarde."
+                if (error.response.data)
+                    this.mensagem.texto = error.response.data.message
+                else 
+                    this.mensagem.texto = "Ocorreu um erro ao fazer login! Tente novamente mais tarde."
+
                 this.mensagem.cor = "danger"
             }).finally(() => {
                 this.carregando = false
@@ -66,12 +61,12 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid bg-secondary d-flex align-items-center justify-content-center flex-column vh-100">
+    <div class="container-fluid bg-bg d-flex align-items-center justify-content-center flex-column">
         
         <form class="form p-4 rounded bg-white" @submit.prevent="login">
             <div class="container text-center mb-3 bg-white rounded">
-                <h1 class="text-dark">
-                    <span class="display-4 font-weight-bold">St</span><i class="fas fa-pie-chart"></i><span class="display-4 font-weight-bold">quei</span>
+                <h1 class="color-bg-dark">
+                    <span class="display-4 font-weight-bold">St</span><i class="fas fa-pie-chart" style="font-size: 2.25rem"></i><span class="display-4 font-weight-bold">quei</span>
                 </h1>
             </div>
 

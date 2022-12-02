@@ -12,6 +12,7 @@
     "js-sha256": "^0.9.0",
     "vue": "^3.2.45",
     "vue-cookies": "^1.8.2",
+    "vue-multiselect": "^3.0.0-alpha.2",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {

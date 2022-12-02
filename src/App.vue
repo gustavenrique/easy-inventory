@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import Navbar from './components/TheNavbar.vue'
+import cookies from 'vue-cookies'
 </script>
 
 <template>
@@ -8,19 +9,15 @@ import Navbar from './components/TheNavbar.vue'
     <section>
       <div class="wrapper bg-dark text-white d-block" style="width: 100vw !important;">
         <Navbar/>
-  
-        <!-- <nav class="d-block">
-          <RouterLink class="text-white" to="/">Home</RouterLink>
-          <span class="mx-3">|</span>
-          <RouterLink  class="text-white" to="/about">About</RouterLink>
-        </nav> -->
       </div>
     </section>
-  
-    <RouterView />
+    
+    <RouterView :class="{view: cookies.get('username')}" class="min-vh-100" />
   </div>
 </template>
 
 <style scoped>
-
+.view {
+  margin-top: 6rem;
+}
 </style>
