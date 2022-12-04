@@ -9,10 +9,21 @@ export default {
         carregando: false,
         produtos: [],
         categorias: [],
-        filtro: { categoria: [], produto: '' },
+        filtro: { categoria: null, produto: '' },
     }),
     mounted() {
         this.BuscarProdutos()
+    },
+    computed: {
+        produtosFiltrados() {
+            var produtoNome = this.filtro.produto.toLowerCase()
+            var categoriaId = this.filtro.categoria?.id
+            
+            return !categoriaId && !produtoNome ? this.produtos
+                : produtoNome && !categoriaId ? this.produtos.filter(p => p.nome.toLowerCase().includes(produtoNome))
+                : categoriaId && !produtoNome ? this.produtos.filter(p => p.categoriaId === categoriaId)
+                : this.produtos.filter(p => (p.categoriaId === categoriaId) && p.nome.toLowerCase().includes(produtoNome))
+        }
     },
     methods: {
         BuscarProdutos() {
@@ -20,10 +31,11 @@ export default {
                 .then(response => {
                     this.carregando = true
                     
-                    if (response.data && response.data.statusCode == 200) 
+                    if (response.data && response.data.statusCode == 200)
+                    {
                         this.produtos = response.data.object.produtos
                         this.categorias = response.data.object.categorias
-
+                    }
                 }).catch(error => {
                     if (error.response.data)
                         this.mensagem.texto = error.response.data.message
@@ -55,14 +67,16 @@ export default {
             </div>
             <div class="mb-3">
                 <div class="d-flex flex-column flex-md-row">
-                    <input type="text" class="form-control mr-md-5 mb-3" placeholder="Filtre por nome">
+                    <input v-model="filtro.produto" type="text" class="form-control mr-md-5 mb-3" placeholder="Filtre por nome">
+
                     <Multiselect
                         v-model="filtro.categoria"
                         :options="categorias" 
                         label="nome" 
                         track-by="id"
                         selectedLabel="Selecionado"
-                        placeholder="Filtre por categoria"></Multiselect>
+                        placeholder="Filtre por categoria">
+                    </Multiselect>
                 </div>
 
                 <div class="pt-3 d-flex justify-content-end">
@@ -70,6 +84,7 @@ export default {
                         Escanear <i class="fas fa-barcode"></i>
                     </button>
                     <button class="btn bg-bg text-white hover-button"><i class="fa fa-plus"></i> Produto</button>
+                    <button class="btn bg-bg text-white hover-button ml-3"><i class="fa fa-plus"></i> Fornecedor</button>
                 </div>
             </div>
             <div v-if="produtos.length">
@@ -80,12 +95,12 @@ export default {
                         <div class="col-md-3 col-4">Quantidade</div>
                     </div>
                 </div>
-                <div v-for="produto in produtos" :key="produto.id" class="card shadow">
+                <div v-for="produto in (produtosFiltrados || produtos)" :key="produto.id" class="card shadow">
                     <div class="card-header p-0">
                         <button class="btn d-flex py-3 bg-bg btn-block text-left text-white"
                          data-toggle="collapse"
                          :data-target="`#collapse-${produto.id}`">
-                            <div class="col-md-6 col-5">{{ produto.nome}}</div>
+                            <div class="col-md-6 col-5 ellipsis">{{ produto.nome}}</div>
                             <div class="col-md-3 col-3">{{ produto.preco }}</div>
                             <div class="col-md-3 col-4 d-flex">
                                 <p class="mr-3">{{ produto.quantidade }}</p>
@@ -114,12 +129,6 @@ export default {
 <style>
 * {
     transition: max-width .3s;
-}
-
-div[class*="col"], div[class^="col"] {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .btn:focus, .bnt:active, .form-control:active, .form-control:focus {
@@ -167,7 +176,11 @@ div[class*="col"], div[class^="col"] {
     border-top-color: #8a8a8a !important;
 }
 
-
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 </style>
 
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
