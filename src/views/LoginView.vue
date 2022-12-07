@@ -42,7 +42,9 @@ export default {
                 this.$router.go()
                 this.$router.push(this.$route.query.redirect || '/')
             }).catch(error => {
-                if (error.response.data)
+                console.log(error)
+
+                if (error?.response?.data)
                     this.mensagem.texto = error.response.data.message
                 else 
                     this.mensagem.texto = "Ocorreu um erro ao fazer login! Tente novamente mais tarde."

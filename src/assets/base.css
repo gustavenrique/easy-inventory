@@ -22,6 +22,62 @@ html, body, #app {
 .color-bg-dark { color: var(--blue-grey-dark); }
 .color-bg-light { color: var(--blue-grey-light); }
 
+
+.multiselect__single {
+    font-size: 1rem !important;
+    margin-top: 1px !important;
+}
+
+.multiselect__tags {
+    height: calc(2.25rem + 2px) !important;
+    font-size: 1rem !important;
+    line-height: 50% !important;
+    border: 1px solid #ccc !important;
+    border-radius: 5px !important;
+    padding: 0.375rem 0.75rem !important;
+}
+
+.multiselect__input {
+    min-height: 20px !important;
+    font-size: 16px !important;
+    line-height: 1.428571429 !important;
+}
+
+.multiselect__placeholder {
+    padding-top: 8px !important;
+    color: #495057 !important;
+}
+
+.multiselect__option--highlight {
+    outline: none !important;
+    color: #fff !important;
+}
+
+.multiselect__spinner:after,
+.multiselect__spinner:before {
+    border-top-color: #8a8a8a !important;
+}
+
+*, *::after, *::before {
+  transition: max-width .3s;
+}
+
+.btn:focus, .bnt:active, .form-control:active, .form-control:focus {
+  box-shadow: none !important;
+  outline: none !important;
+  border: 0 !important;
+}
+
+.hover-button:hover {
+  opacity: .7;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 ::-webkit-scrollbar {width: .7rem;}
 
 ::-webkit-scrollbar-track {
