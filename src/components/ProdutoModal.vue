@@ -1,34 +1,34 @@
 <script>
 import axios, * as others from 'axios'
 
-export default {
-    props: [ 'formulario', 'modo', 'fornecedores', 'categorias' ],
-    data: () => ({
+const areObjectsEqual = (first, second) => {
+    let firstKeys = Object.keys(first)
+    let secondKeys = Object.keys(second)
 
-    }),
+    if (firstKeys.length !== secondKeys.length) return false
+    
+    for (let key of firstKeys) {
+        const areValuesAnObject = isObject(first[key]) && isObject(second[key])
+
+        if ((areValuesAnObject && !areObjectsEqual(first[key], second[key])) || (!areValuesAnObject && first[key] !== second[key]))
+            return false
+    }
+
+    return true
+}
+
+const isObject = (object) => object != null && typeof object === 'object'
+
+export default {
+    props: [ 'formulario', 'formularioOriginal', 'modo', 'fornecedores', 'categorias' ],
     computed: {
+        formularioFoiAlterado() {
+            if (this.modo !== 'Editar') return false
+
+            return !areObjectsEqual(this.formularioOriginal, this.formulario)
+        },
     },
     methods: {
-        cancelarCriacaoProduto() {
-            let f = this.formulario
-
-            if (this.formulario.nome != '' || this.formulario.preco != null || this.formulario.codigoEan != '' || this.formulario.quantia != null || this.formulario.categoria != '' || this.formulario.fornecedores.length > 0)
-                this.$swal({
-                    title: 'Tem certeza?',
-                    text: 'Os dados inseridos serão perdidos. Realmente deseja cancelar a criação?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sim, cancele',
-                    cancelButtonText: 'Não, volte'
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        this.limparFormulario()
-                        $('#modalProduto').modal('hide')
-                    }
-                })
-            else $('#modalProduto').modal('hide')
-
-        },
         criarProduto() {
             if (!(this.formulario.nome != '' && this.formulario.preco != null && this.formulario.codigoEan != '' && this.formulario.quantia != null && this.formulario.categoria != '' && this.formulario.fornecedores.length > 0)) {
                 this.$swal({
@@ -51,18 +51,17 @@ export default {
                     
                     this.$swal({
                         title: 'Sucesso!',
-                        text: `O produto ${f.nome} foi registrado com sucesso.`,
+                        text: `O produto '${f.nome}' foi registrado com sucesso.`,
                         icon: 'success',
                         confirmButtonColor: '#37474f'
                     })
 
                     this.limparFormulario()
+                    this.$router.go()
                 }
 
                 this.carregando = false
             }).catch(error => {
-                console.log(error)
-
                 this.$swal({
                     title: 'Erro na criação!',
                     html: `Tente novamente mais tarde ou acione o suporte. </br> Erro: ${error}`,
@@ -71,6 +70,74 @@ export default {
                 
                 this.carregando = false
             })
+        },
+        atualizarProduto() {
+            axios.put(`${this.$apiUrl}/Produto`, {
+                id: this.formulario.id, nome: this.formulario.nome, codigoEan: this.formulario.codigoEan, preco: this.formulario.preco,
+                quantia: this.formulario.quantia, fabricante: this.formulario.fabricante, fornecedores: this.formulario.fornecedores.map(f => f.id), categoriaId: this.formulario.categoria[0].id
+            }).then(res => {
+                $('#modalProduto').modal('hide')
+
+                if (res.status == 204) {
+                    // atualizando lista de produtos na mão (para evitar consulta em banco)
+                    let f = this.formulario
+                    let produtoAtualizado = {
+                        id: f.id, nome: f.nome, preco: f.preco, fabricante: f.fabricante, quantia: f.quantia, codigoEan: f.codigoEan, categoriaId: f.categoria[0].id,
+                        fornecedores: f.fornecedores.map(f => f.id)
+                    }
+
+                    this.$emit('produtoAtualizado', produtoAtualizado)
+
+                    this.$swal({
+                        title: 'Sucesso!',
+                        text: `O produto '${this.formularioOriginal.nome}' foi atualizado com sucesso.`,
+                        icon: 'success',
+                        confirmButtonColor: '#37474f'
+                    })
+
+                    this.limparFormulario()
+                }
+                else {
+                    this.$swal({
+                        title: 'Ocorreu um erro!',
+                        text: `${res.data.message}`,
+                        icon: 'error',
+                        confirmButtonColor: '#37474f'
+                    })
+                }
+            }).catch(error => {
+                this.$swal({
+                    title: 'Erro na atualização!',
+                    html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
+                    icon: 'error',
+                })
+            })
+        },
+        salvar() {
+            if (this.modo == 'Criar') this.criarProduto()
+            else this.atualizarProduto()
+        },
+        cancelar() {
+            var f = this.formulario
+            
+            if ((this.modo == 'Editar' && this.formularioFoiAlterado) || (this.modo == 'Criar' && (f.nome != '' || f.preco != null || f.codigoEan != '' || f.quantia != null || f.categoria != '' || f.fornecedores.length > 0)))
+                this.mostrarSweetAlertCancelamento()
+            else $('#modalProduto').modal('hide')
+        },
+        mostrarSweetAlertCancelamento() {
+            this.$swal({
+                    title: 'Tem certeza?',
+                    text: 'Os dados inseridos serão perdidos. Realmente deseja cancelar?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, cancele',
+                    cancelButtonText: 'Não, volte'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        this.limparFormulario()
+                        $('#modalProduto').modal('hide')
+                    }
+                })
         },
         limparFormulario() {
             [this.formulario.nome, this.formulario.codigoEan, this.formulario.preco, this.formulario.fabricante,
@@ -130,8 +197,8 @@ export default {
             </div>
 
             <div class="modal-footer">
-                <button class="btn bg-danger text-light mr-auto" @click="cancelarCriacaoProduto">Cancelar</button>
-                <button class="btn bg-success text-white" @click="criarProduto">Salvar</button>
+                <button class="btn bg-danger text-light mr-auto" @click="cancelar">Cancelar</button>
+                <button class="btn bg-success text-white" :class="{ disabled: !formularioFoiAlterado }" @click="salvar" :disabled="!formularioFoiAlterado">Salvar</button>
             </div>
         </div>
     </div>

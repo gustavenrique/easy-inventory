@@ -17,19 +17,28 @@ export default {
             modo: ''
         },
         modalProduto: {
-            modo: '', // criar, editar, visualizar
+            modo: '', // Criar, Editar, Visualizar
             formulario: { nome: '', codigoEan: '', preco: null, fabricante: '', fornecedores: [], categoria: '', quantia: null },
+            formularioOriginal: null
         },
+        botoesProduto: {
+            mostrar: false,
+            produtoId: null
+        },
+        windowWidth: window.innerWidth
     }),
     mounted() {
         this.BuscarProdutos()
 
-        console.log(this.$swal)
+        window.addEventListener('resize', this.windowResize)
+    },
+    destroyed() {
+        window.removeEventListener('resize', this.windowResize)
     },
     computed: {
         produtosFiltrados() {
-            var produtoNome = this.filtro.produto.toLowerCase()
-            var categoriaId = this.filtro.categoria?.id
+            let produtoNome = this.filtro.produto.toLowerCase()
+            let categoriaId = this.filtro.categoria?.id
 
             return !categoriaId && !produtoNome ? this.produtos
                 : produtoNome && !categoriaId ? this.produtos.filter(p => p.nome.toLowerCase().includes(produtoNome))
@@ -60,10 +69,65 @@ export default {
                     this.carregando = false
                 })
         },
-        nomeDaCategoria(categoriaId) { 
-            var categoria = this.categorias.find(c => c.id == categoriaId)
-            return categoria.nome
-        }
+        deletarProduto(produto) {
+            this.$swal({
+                title: 'Deletar produto?',
+                text: `O produto '${produto.nome}' será deletado. Realmente deseja prosseguir?`,
+                icon: 'warning',
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                confirmButtonText: 'Deletar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    this.carregando = true
+
+                    axios.delete(`${this.$apiUrl}/Produto/${produto.id}`)
+                        .then(res => {
+                            if (res.status == 204) {
+                                this.$swal({
+                                    title: 'Sucesso!',
+                                    text: `O produto '${produto.nome}' foi deletado com sucesso.`,
+                                    icon: 'success',
+                                    confirmButtonColor: '#37474f'
+                                })
+
+                                this.produtos = this.produtos.filter(p => p.id != produto.id)
+                            }
+                            
+                            this.carregando = false
+                        }).catch(error => {
+                            this.$swal({
+                                title: 'Erro na deleção!',
+                                html: `Tente novamente mais tarde ou acione o suporte. </br> Erro: ${error}`,
+                                icon: 'error',
+                            })
+
+                            this.carregando = false
+                        })
+                },
+                allowOutsideClick: () => !this.$swal.isLoading()
+            })
+        },
+        mostrarModalAlteracao(produto) {
+            this.modalProduto.modo = 'Editar'
+
+            this.modalProduto.formulario = {
+                id: produto.id, nome: produto.nome, codigoEan: produto.codigoEan,  preco: produto.preco, fabricante: produto.fabricante, quantia: produto.quantia,
+                fornecedores: this.fornecedores.filter(f => produto.fornecedores.includes(f.id)),
+                categoria: this.categorias.filter(c => produto.categoriaId == c.id)
+            }
+
+            this.modalProduto.formularioOriginal = JSON.parse(JSON.stringify(this.modalProduto.formulario))
+
+            $('#modalProduto').modal('show')
+        },
+        nomeDaCategoria(categoriaId) { return this.categorias.find(c => c.id == categoriaId).nome },
+        handlerProdutoAtualizado(produtoAtualizado) { this.produtos = this.produtos.map(p => produtoAtualizado.id === p.id ? produtoAtualizado : p); },
+        toggleBotoesProduto(produtoId) {
+            this.botoesProduto.mostrar = !this.botoesProduto.mostrar
+            this.botoesProduto.produtoId = produtoId
+        },
+        windowResize() { this.windowWidth = window.innerWidth }
     }
 }
 </script>
@@ -97,7 +161,6 @@ export default {
                         <i class="fas fa-barcode"></i> Escanear
                     </button>
                     <button class="btn bg-bg text-white hover-button" data-backdrop="static" data-toggle="modal" data-target="#modalProduto" @click="modalProduto.modo = 'Criar'"><i class="fa fa-plus"></i> Produto</button>
-                    <button class="btn bg-bg text-white hover-button ml-3" data-backdrop="static" data-toggle="modal" data-target="#modalFornecedor" @click="modal.modoFornecedor = 'Criar'"><i class="fa fa-plus"></i> Fornecedor</button>
                 </div>
             </div>
 
@@ -118,10 +181,19 @@ export default {
                             <div class="col-md-3 col-3">{{ produto.preco }}</div>
                             <div class="col-md-3 col-4 d-flex">
                                 <p class="mr-3">{{ produto.quantia }}</p>
+                                
+                                <button class="btn hover-button ml-auto my-auto bg-bg-light botao-ellipsis" @click="toggleBotoesProduto(produto.id)">
+                                    <i class="fas fa-ellipsis-v text-white"></i>
+                                </button>
 
-                                <div class="ml-auto">
-                                    <i class="fa fa-trash hover-button p-2"></i>|
-                                    <i class="fa fa-pen hover-button p-2"></i>
+                                <div class="ml-auto botoes-produto-container" v-show="(botoesProduto.mostrar && produto.id === botoesProduto.produtoId) || windowWidth > 560">
+                                    <button class="btn hover-button bg-bg-light" @click="deletarProduto(produto)">
+                                        <i class="fa fa-trash text-white"></i>
+                                    </button>
+                                    |
+                                    <button class="btn hover-button bg-bg-light" @click="mostrarModalAlteracao(produto)">
+                                        <i class="fa fa-pen text-white"></i>
+                                    </button>
                                 </div>
                             </div>
                         </button>
@@ -137,12 +209,47 @@ export default {
                 </div>        
             </div>
 
-            <ProdutoModal v-if="true" v-bind="modalProduto" :fornecedores="fornecedores" :categorias="categorias" />
+            <ProdutoModal v-bind="modalProduto" :fornecedores="fornecedores" :categorias="categorias" @produto-atualizado="handlerProdutoAtualizado"/>
         </div>
     </section>
 </template>
 
-<style>
+<style scoped>
+*, *::before, *::after {
+    transition: left 1s, visibility 1s, opacity 0.5s linear;
+}
+
+.botao-ellipsis { display: none }
+
+@media (max-width: 560px) {
+    .botoes-produto-container {
+        display: block;
+        background-color: var(--blue-grey-dark);
+        padding: .5rem;
+        position: absolute;
+        left: -20px;
+        top: -5px;
+    }
+
+    .botoes-produto-container::after {
+        content: '';
+        position: absolute;
+        background-color: transparent;
+        top: 50%;
+        transform: translateY(-50%);
+        right: -10px;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-left: 10px solid var(--blue-grey-dark);
+    }
+
+    .botao-ellipsis {
+        display: block;
+    }
+}
+
+@media (max-width: 460px) { .botoes-produto-container { left: -3rem; } }
+@media (max-width: 375px) { .botoes-produto-container { left: -5rem; } }
 </style>
 
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
