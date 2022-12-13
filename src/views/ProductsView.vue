@@ -1,21 +1,19 @@
 <script>
 import axios, * as others from 'axios';
 import ProdutoModal from '../components/ProdutoModal.vue'
+import ScannerModal from '../components/ScannerModal.vue'
 
 $(() => $('[data-toggle="tooltip"]').tooltip())
 
 export default {
     name: 'products',
-    components: { ProdutoModal },
+    components: { ProdutoModal, ScannerModal },
     data: () => ({
         carregando: false,
         produtos: [],
         categorias: [],
         fornecedores: [],
         filtro: { categoria: null, produto: '' },
-        modalFornecedor: {
-            modo: ''
-        },
         modalProduto: {
             modo: '', // Criar, Editar, Visualizar
             formulario: { nome: '', codigoEan: '', preco: null, fabricante: '', fornecedores: [], categoria: '', quantia: null },
@@ -25,7 +23,8 @@ export default {
             mostrar: false,
             produtoId: null
         },
-        windowWidth: window.innerWidth
+        windowWidth: window.innerWidth,
+        scanner: { active: false, filtroEan: '' }
     }),
     mounted() {
         this.BuscarProdutos()
@@ -122,12 +121,34 @@ export default {
             $('#modalProduto').modal('show')
         },
         nomeDaCategoria(categoriaId) { return this.categorias.find(c => c.id == categoriaId).nome },
+        formatToCurrency(num) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(num)
+        },
         handlerProdutoAtualizado(produtoAtualizado) { this.produtos = this.produtos.map(p => produtoAtualizado.id === p.id ? produtoAtualizado : p); },
+        handlerProdutoCriado(produtoCriado) { this.produtos.push(produtoCriado) },
         toggleBotoesProduto(produtoId) {
             this.botoesProduto.mostrar = !this.botoesProduto.mostrar
             this.botoesProduto.produtoId = produtoId
         },
-        windowResize() { this.windowWidth = window.innerWidth }
+        windowResize() { this.windowWidth = window.innerWidth },
+        mostrarScanner() {
+            $('#scannerModal').modal('show')
+            this.scanner.active = true
+        },
+        scanResultado(eanEscaneado) {
+            this.scanner.filtroEan = eanEscaneado
+            this.scanner.active = false
+            $('#scannerModal').modal('hide')
+
+            let produto = this.produtos.find(p => p.codigoEan === eanEscaneado)
+
+            this.mostrarModalAlteracao(produto)
+        }
     }
 }
 </script>
@@ -157,7 +178,7 @@ export default {
                 </div>
 
                 <div class="pt-3 d-flex justify-content-end">
-                    <button class="btn bg-bg-light text-white hover-button mr-3">
+                    <button class="btn bg-bg-light text-white hover-button mr-3" @click="mostrarScanner" data-backdrop="static">
                         <i class="fas fa-barcode"></i> Escanear
                     </button>
                     <button class="btn bg-bg text-white hover-button" data-backdrop="static" data-toggle="modal" data-target="#modalProduto" @click="modalProduto.modo = 'Criar'"><i class="fa fa-plus"></i> Produto</button>
@@ -178,7 +199,7 @@ export default {
                          data-toggle="collapse"
                          :data-target="`#collapse-${produto.id}`">
                             <div class="col-md-6 col-5 ellipsis">{{ produto.nome}}</div>
-                            <div class="col-md-3 col-3">{{ produto.preco }}</div>
+                            <div class="col-md-3 col-3">{{ formatToCurrency(produto.preco) }}</div>
                             <div class="col-md-3 col-4 d-flex">
                                 <p class="mr-3">{{ produto.quantia }}</p>
                                 
@@ -208,8 +229,9 @@ export default {
                     </div>
                 </div>        
             </div>
-
-            <ProdutoModal v-bind="modalProduto" :fornecedores="fornecedores" :categorias="categorias" @produto-atualizado="handlerProdutoAtualizado"/>
+            
+            <ScannerModal :active="scanner.active" :produtosEan="produtos.map(p => p.codigoEan)" @disable-scanner="scanner.active = false" @scanner-result="scanResultado"></ScannerModal>
+            <ProdutoModal v-bind="modalProduto" :fornecedores="fornecedores" :categorias="categorias" @produto-atualizado="handlerProdutoAtualizado" @produto-criado="handlerProdutoCriado"/>
         </div>
     </section>
 </template>
@@ -217,6 +239,10 @@ export default {
 <style scoped>
 *, *::before, *::after {
     transition: left 1s, visibility 1s, opacity 0.5s linear;
+}
+
+video {
+    min-width: 100% !important;
 }
 
 .botao-ellipsis { display: none }

@@ -56,8 +56,14 @@ export default {
                         confirmButtonColor: '#37474f'
                     })
 
+                    // atualizando lista de produtos na mão (para evitar reconsulta em banco)
+                    let produtoCriado = {
+                        id: res.data.object, nome: f.nome, preco: f.preco, fabricante: f.fabricante, quantia: f.quantia, codigoEan: f.codigoEan, categoriaId: f.categoria.id,
+                        fornecedores: f.fornecedores.map(fornecedor => fornecedor.id)
+                    }
+
+                    this.$emit('produtoCriado', produtoCriado)
                     this.limparFormulario()
-                    this.$router.go()
                 }
 
                 this.carregando = false
@@ -79,11 +85,10 @@ export default {
                 $('#modalProduto').modal('hide')
 
                 if (res.status == 204) {
-                    // atualizando lista de produtos na mão (para evitar consulta em banco)
                     let f = this.formulario
                     let produtoAtualizado = {
                         id: f.id, nome: f.nome, preco: f.preco, fabricante: f.fabricante, quantia: f.quantia, codigoEan: f.codigoEan, categoriaId: f.categoria[0].id,
-                        fornecedores: f.fornecedores.map(f => f.id)
+                        fornecedores: f.fornecedores.map(fornecedor => fornecedor.id)
                     }
 
                     this.$emit('produtoAtualizado', produtoAtualizado)
@@ -164,7 +169,7 @@ export default {
                         </div>
                         <div class="form-group col-md-6">
                             <label for="codigoEan">Código EAN *</label>
-                            <input id="codigoEan" v-model='formulario.codigoEan' type="text" class="form-control" autocomplete="off">
+                            <input id="codigoEan" v-model='formulario.codigoEan' type="text" class="form-control" autocomplete="off" maxlength="13" minlength="13">
                         </div>
                     </div>
                     <div class="row">
@@ -198,7 +203,7 @@ export default {
 
             <div class="modal-footer">
                 <button class="btn bg-danger text-light mr-auto" @click="cancelar">Cancelar</button>
-                <button class="btn bg-success text-white" :class="{ disabled: !formularioFoiAlterado }" @click="salvar" :disabled="!formularioFoiAlterado">Salvar</button>
+                <button class="btn bg-success text-white" :class="{ disabled: !formularioFoiAlterado && modo == 'Editar' }" @click="salvar" :disabled="!formularioFoiAlterado && modo == 'Editar'">Salvar</button>
             </div>
         </div>
     </div>
