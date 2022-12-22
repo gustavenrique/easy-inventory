@@ -24,7 +24,7 @@ export default {
             produtoId: null
         },
         windowWidth: window.innerWidth,
-        scanner: { active: false, filtroEan: '' }
+        scanner: { active: false }
     }),
     mounted() {
         this.BuscarProdutos()
@@ -137,13 +137,12 @@ export default {
         },
         windowResize() { this.windowWidth = window.innerWidth },
         mostrarScanner() {
-            $('#scannerModal').modal('show')
+            $('#products-scanner').modal('show')
             this.scanner.active = true
         },
         scanResultado(eanEscaneado) {
-            this.scanner.filtroEan = eanEscaneado
             this.scanner.active = false
-            $('#scannerModal').modal('hide')
+            $('#products-scanner').modal('hide')
 
             let produto = this.produtos.find(p => p.codigoEan === eanEscaneado)
 
@@ -230,8 +229,8 @@ export default {
                 </div>        
             </div>
             
-            <ScannerModal :active="scanner.active" :produtosEan="produtos.map(p => p.codigoEan)" @disable-scanner="scanner.active = false" @scanner-result="scanResultado"></ScannerModal>
-            <ProdutoModal v-bind="modalProduto" :fornecedores="fornecedores" :categorias="categorias" @produto-atualizado="handlerProdutoAtualizado" @produto-criado="handlerProdutoCriado"/>
+            <ScannerModal id='products-scanner' :active="scanner.active" :produtosEan="produtos.map(p => p.codigoEan)" @disable-scanner="scanner.active = false" @scanner-result-products="scanResultado"></ScannerModal>
+            <ProdutoModal v-bind="modalProduto" :fornecedores="fornecedores" :categorias="categorias" :userComponent="'ProductsView'" @produto-atualizado="handlerProdutoAtualizado" @produto-criado="handlerProdutoCriado"/>
         </div>
     </section>
 </template>

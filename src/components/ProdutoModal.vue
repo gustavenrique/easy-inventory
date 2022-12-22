@@ -1,5 +1,8 @@
 <script>
 import axios, * as others from 'axios'
+import ScannerModal from '../components/ScannerModal.vue'
+import Barcode from '../components/Barcode.vue'
+import QrcodeVue from 'qrcode.vue'
 
 const areObjectsEqual = (first, second) => {
     let firstKeys = Object.keys(first)
@@ -21,13 +24,17 @@ const isObject = (object) => object != null && typeof object === 'object'
 
 export default {
     props: [ 'formulario', 'formularioOriginal', 'modo', 'fornecedores', 'categorias' ],
+    components: { ScannerModal, Barcode, QrcodeVue },
     computed: {
         formularioFoiAlterado() {
             if (this.modo !== 'Editar') return false
 
             return !areObjectsEqual(this.formularioOriginal, this.formulario)
-        },
+        }
     },
+    data: () => ({
+        scannerActive: false
+    }),
     methods: {
         criarProduto() {
             if (!(this.formulario.nome != '' && this.formulario.preco != null && this.formulario.codigoEan != '' && this.formulario.quantia != null && this.formulario.categoria != '' && this.formulario.fornecedores.length > 0)) {
@@ -127,7 +134,11 @@ export default {
             
             if ((this.modo == 'Editar' && this.formularioFoiAlterado) || (this.modo == 'Criar' && (f.nome != '' || f.preco != null || f.codigoEan != '' || f.quantia != null || f.categoria != '' || f.fornecedores.length > 0)))
                 this.mostrarSweetAlertCancelamento()
-            else $('#modalProduto').modal('hide')
+            else {
+                this.limparFormulario()
+                $('#modalProduto').modal('hide')
+            }
+            
         },
         mostrarSweetAlertCancelamento() {
             this.$swal({
@@ -147,6 +158,15 @@ export default {
         limparFormulario() {
             [this.formulario.nome, this.formulario.codigoEan, this.formulario.preco, this.formulario.fabricante,
             this.formulario.quantia, this.formulario.categoria, this.formulario.fornecedores] = ['', '', null, '', null, '', '']
+        },
+        mostrarScanner() {
+            $('#produto-modal-scanner').modal('show')
+            this.scannerActive = true
+        },
+        decodeResult(eanEscaneado) {
+            this.scannerActive = false
+            $('#produto-modal-scanner').modal('hide')
+            this.formulario.codigoEan = eanEscaneado
         }
     }
 }
@@ -168,8 +188,13 @@ export default {
                             <input id='nome' v-model='formulario.nome' type="text" class="form-control" required autocomplete="off">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="codigoEan">Código EAN *</label>
-                            <input id="codigoEan" v-model='formulario.codigoEan' type="text" class="form-control" autocomplete="off" maxlength="13" minlength="13">
+                            <label for="codigoEan">Código de Barras *</label>
+                            <div class="input-group">
+                                <input id="codigoEan" v-model='formulario.codigoEan' type="text" class="form-control" autocomplete="off" maxlength="13" minlength="13">
+                                <div class="input-group-append">
+                                    <div class="btn bg-bg-dark text-white" @click="mostrarScanner">Escanear</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -199,6 +224,15 @@ export default {
                         <input v-model='formulario.fabricante' id="fabricante" type="text" class="form-control" autocomplete="off">
                     </div>
                 </form>
+
+                <div class="d-flex justify-content-center" v-if="formulario.codigoEan.length > 0">
+                    <div class="col-6 d-flex justify-content-center">
+                        <Barcode :value="formulario.codigoEan" format="CODE128"/>
+                    </div>
+                    <div class="col-6 d-flex justify-content-center">
+                        <qrcode-vue :value="formulario.codigoEan" :size="140"></qrcode-vue>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">
@@ -206,6 +240,8 @@ export default {
                 <button class="btn bg-success text-white" :class="{ disabled: !formularioFoiAlterado && modo == 'Editar' }" @click="salvar" :disabled="!formularioFoiAlterado && modo == 'Editar'">Salvar</button>
             </div>
         </div>
+
+        <ScannerModal id="produto-modal-scanner" :active="scannerActive" :userComponent="'ProdutoModal'" @disable-scanner="scannerActive = false" @scanner-result-produto-modal="decodeResult"></ScannerModal>
     </div>
 </div>
 </template>

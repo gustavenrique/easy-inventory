@@ -4,10 +4,12 @@ import { StreamBarcodeReader } from 'vue-barcode-reader'
 export default {
     name: 'scanner',
     components: { StreamBarcodeReader },
-    props: ['active', 'produtosEan'],
+    props: ['active', 'produtosEan', 'userComponent'],
     methods: {
         decodeHandler(decode) {
-            if (!this.produtosEan.includes(decode)) {
+            console.log(decode);
+            
+            if (this.produtosEan?.length > 0 && !this.produtosEan.includes(decode)) {
                 this.$swal({
                     title: 'Ops',
                     text: `Não foi possível encontrar este pedido. Código EAN inválido: ${decode}`,
@@ -17,14 +19,17 @@ export default {
                 return
             }
 
-            this.$emit('scannerResult', decode)
+            if (this.userComponent == 'ProductsView')
+                this.$emit('scannerResultProducts', decode)
+            else if (this.userComponent == 'ProdutoModal')
+                this.$emit('scannerResultProdutoModal', decode)
         }
     }
 }
 </script>
 
 <template>
-    <div class="modal fade" id="scannerModal" data-backdrop="static">
+    <div class="modal fade" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered text-white modal-xl">
             <div class="modal-content bg-bg-light">
                 <div class="modal-head p-3 d-flex align-items-center justify-content-between">
