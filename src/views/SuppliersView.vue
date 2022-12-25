@@ -50,12 +50,62 @@ export default {
                     this.carregando = false
                 })
         },
+        deletarFornecedor(fornecedor) {
+            this.$swal({
+                title: 'Deletar fornecedor?',
+                text: `O fornecedor '${fornecedor.nome}' será deletado. Realmente deseja prosseguir?`,
+                icon: 'warning',
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                confirmButtonText: 'Deletar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    this.carregando = true
+
+                    axios.delete(`${this.$apiUrl}/fornecedor/${fornecedor.id}`)
+                        .then(res => {
+                            if (res.status == 204) {
+                                this.$swal({
+                                    title: 'Sucesso!',
+                                    text: `O fornecedor '${fornecedor.nome}' foi deletado com sucesso.`,
+                                    icon: 'success',
+                                    confirmButtonColor: '#37474f'
+                                })
+
+                                this.fornecedores = this.fornecedores.filter(p => p.id != fornecedor.id)
+                            }
+                            
+                            this.carregando = false
+                        }).catch(error => {
+                            this.$swal({
+                                title: 'Erro na deleção!',
+                                html: `Tente novamente mais tarde ou acione o suporte. </br> Erro: ${error}`,
+                                icon: 'error',
+                            })
+
+                            this.carregando = false
+                        })
+                },
+                allowOutsideClick: () => !this.$swal.isLoading()
+            })
+        },
         mostrarFormularioCriacao() {
             this.modalFornecedor.modo = 'Criar'
             $("#modal-fornecedor").modal('show')
         },
+        mostrarFormularioAlteracao(fornecedor) {
+            this.modalFornecedor.modo = 'Editar'
+
+            this.modalFornecedor.fornecedor = {
+                id: fornecedor.id, nome: fornecedor.nome, email: fornecedor.email,  telefone: fornecedor.telefone
+            }
+
+            this.modalFornecedor.fornecedorOriginal = JSON.parse(JSON.stringify(this.modalFornecedor.fornecedor))
+
+            $('#modal-fornecedor').modal('show')
+        },
         handlerFornecedorCriado(fornecedorCriado) { this.fornecedores.push(fornecedorCriado) },
-        handlerFornecedorAtualizado(fornecedorAtualizado) { this.fornecedores = this.fornecedores.map(f => fornecedorAtualizado.id === f.id ? fornecedorAtualizado : f) },
+        handlerFornecedorAtualizado(fornecedorAtualizado) { this.fornecedores = this.fornecedores.map(f => f.id == fornecedorAtualizado.id ? fornecedorAtualizado : f) },
         toggleBotoesFornecedor(fornecedorId) {
             this.botoesFornecedor.mostrar = !this.botoesFornecedor.mostrar
             this.botoesFornecedor.fornecedorId = fornecedorId
@@ -107,7 +157,7 @@ export default {
                                         <i class="fa fa-trash text-white"></i>
                                     </button>
                                     |
-                                    <button class="btn hover-button bg-bg-light" @click="mostrarModalAlteracao(fornecedor)">
+                                    <button class="btn hover-button bg-bg-light" @click="mostrarFormularioAlteracao(fornecedor)">
                                         <i class="fa fa-pen text-white"></i>
                                     </button>
                                 </div>

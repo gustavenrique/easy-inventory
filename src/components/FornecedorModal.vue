@@ -67,6 +67,44 @@ export default {
                 this.carregando = false
             })
         },
+        atualizarFornecedor() {
+            axios.put(`${this.$apiUrl}/fornecedor`, this.fornecedor)
+            .then(res => {
+                $('#modal-fornecedor').modal('hide')
+
+                if (res.status == 204) {
+                    let f = this.fornecedor
+                    let fornecedorAtualizado = {
+                        id: f.id, nome: f.nome, email: f.email, telefone: f.telefone
+                    }
+
+                    this.$emit('fornecedorAtualizado', fornecedorAtualizado)
+
+                    this.$swal({
+                        title: 'Sucesso!',
+                        text: `O fornecedor '${this.fornecedorOriginal.nome}' foi atualizado com sucesso.`,
+                        icon: 'success',
+                        confirmButtonColor: '#37474f'
+                    })
+
+                    this.limparFormulario()
+                }
+                else {
+                    this.$swal({
+                        title: 'Ocorreu um erro!',
+                        text: `${res.data.message}`,
+                        icon: 'error',
+                        confirmButtonColor: '#37474f'
+                    })
+                }
+            }).catch(error => {
+                this.$swal({
+                    title: 'Erro na atualização!',
+                    html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
+                    icon: 'error',
+                })
+            })
+        },
         salvar() {
             if (this.modo == 'Criar') this.criarFornecedor()
             else this.atualizarFornecedor()
