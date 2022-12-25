@@ -3,37 +3,24 @@ import axios, * as others from 'axios'
 import ScannerModal from '../components/ScannerModal.vue'
 import Barcode from '../components/Barcode.vue'
 import QrcodeVue from 'qrcode.vue'
-
-const areObjectsEqual = (first, second) => {
-    let firstKeys = Object.keys(first)
-    let secondKeys = Object.keys(second)
-
-    if (firstKeys.length !== secondKeys.length) return false
-    
-    for (let key of firstKeys) {
-        const areValuesAnObject = isObject(first[key]) && isObject(second[key])
-
-        if ((areValuesAnObject && !areObjectsEqual(first[key], second[key])) || (!areValuesAnObject && first[key] !== second[key]))
-            return false
-    }
-
-    return true
-}
-
-const isObject = (object) => object != null && typeof object === 'object'
+import { areObjectsEqual, AlertCancelamento } from '../assets/helper'
 
 export default {
-    props: [ 'formulario', 'formularioOriginal', 'modo', 'fornecedores', 'categorias' ],
+    props: [ 'formulario', 'formularioOriginal', 'modo', 'fornecedores', 'categorias', 'produtos' ],
     components: { ScannerModal, Barcode, QrcodeVue },
     computed: {
         formularioFoiAlterado() {
             if (this.modo !== 'Editar') return false
 
             return !areObjectsEqual(this.formularioOriginal, this.formulario)
+        },
+        mensagemValidacaoEan() {
+            let codigoEanJaUsado = this.produtos.find(p => p.id != this.formulario?.id && p.codigoEan == this.formulario.codigoEan)
+            return codigoEanJaUsado != undefined ? 'Código Ean já em uso.' : ''
         }
     },
     data: () => ({
-        scannerActive: false
+        scannerActive: false,
     }),
     methods: {
         criarProduto() {
@@ -133,27 +120,12 @@ export default {
             var f = this.formulario
             
             if ((this.modo == 'Editar' && this.formularioFoiAlterado) || (this.modo == 'Criar' && (f.nome != '' || f.preco != null || f.codigoEan != '' || f.quantia != null || f.categoria != '' || f.fornecedores.length > 0)))
-                this.mostrarSweetAlertCancelamento()
+                AlertCancelamento('#modalProduto', this.limparFormulario)
             else {
                 this.limparFormulario()
                 $('#modalProduto').modal('hide')
             }
             
-        },
-        mostrarSweetAlertCancelamento() {
-            this.$swal({
-                    title: 'Tem certeza?',
-                    text: 'Os dados inseridos serão perdidos. Realmente deseja cancelar?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sim, cancele',
-                    cancelButtonText: 'Não, volte'
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        this.limparFormulario()
-                        $('#modalProduto').modal('hide')
-                    }
-                })
         },
         limparFormulario() {
             [this.formulario.nome, this.formulario.codigoEan, this.formulario.preco, this.formulario.fabricante,
@@ -188,7 +160,7 @@ export default {
                             <input id='nome' v-model='formulario.nome' type="text" class="form-control" required autocomplete="off">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="codigoEan">Código de Barras *</label>
+                            <label for="codigoEan" :class="{ 'text-warning': mensagemValidacaoEan }">{{ mensagemValidacaoEan || 'Código de Barras *'}}</label>
                             <div class="input-group">
                                 <input id="codigoEan" v-model='formulario.codigoEan' type="text" class="form-control" autocomplete="off" maxlength="13" minlength="13">
                                 <div class="input-group-append">

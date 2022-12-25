@@ -20,11 +20,9 @@ export default {
 
 <template>
     <div v-if='userLoggedIn' class="navbar navbar-expand-lg fixed-top p-3 bg-bg">
-        <RouterLink class="navbar-brand text-white d-flex" to="/products">
-          <h1>
-              <span class="display-5 font-weight-bold">St</span><i class="fas fa-pie-chart pie"></i><span class="display-5 font-weight-bold">quei</span>
-          </h1>
-        </RouterLink>
+        <a href="https://stoquei.com" class="text-white" target="_blank" style="text-decoration: none">
+          <h1><span class="display-5 font-weight-bold">St</span><i class="fas fa-pie-chart pie"></i><span class="display-5 font-weight-bold">quei</span></h1>
+        </a>
 
         <button
           type="button"
@@ -44,13 +42,16 @@ export default {
                     <RouterLink class="m-1 nav-link navbar-link" to="/products">Produtos</RouterLink>
                 </li>
                 <li class="nav-item">
+                    <RouterLink class="m-1 nav-link navbar-link" to="/suppliers">Fornecedores</RouterLink>
+                </li>
+                <li class="nav-item">
+                  <RouterLink class="m-1 nav-link navbar-link" to="/orders">Pedidos</RouterLink>
+                </li>
+                <li class="nav-item">
+                  <RouterLink class="m-1 nav-link navbar-link" to="/users">Usuarios</RouterLink>
+                </li>
+                <li class="nav-item">
                     <RouterLink class="m-1 nav-link navbar-link" to="/dashboard">Dashboard</RouterLink>
-                </li>
-                <li class="nav-item">
-                    <RouterLink class="m-1 nav-link navbar-link" to="/orders">Pedidos</RouterLink>
-                </li>
-                <li class="nav-item">
-                    <RouterLink class="m-1 nav-link navbar-link" to="/users">Usuarios</RouterLink>
                 </li>
                 <li class="nav-item">
                     <RouterLink class="m-1 nav-link navbar-link" to="/my-account">Sua Conta</RouterLink>
@@ -61,6 +62,8 @@ export default {
 </template>
 
 <style>
+.router-link-active { border-bottom: 2px solid white !important; }
+
 .full-rounded {
   border-radius: 50%;
 }

@@ -12,6 +12,14 @@ const routes = [
       meta: { requireNoAuth: true }
     },
     {
+      path: '/users', name: 'users', component: () => import('../views/UsersView.vue'),
+      meta: { requireAuth: true }
+    },
+    {
+      path: '/suppliers', name: 'suppliers', component: () => import('../views/SuppliersView.vue'),
+      meta: { requireAuth: true }
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('@/views/NotFound.vue'), 

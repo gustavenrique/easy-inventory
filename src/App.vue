@@ -18,6 +18,6 @@ import cookies from 'vue-cookies'
 
 <style scoped>
 .view {
-  margin-top: 6rem;
+  margin-top:5.5rem;
 }
 </style>

@@ -59,12 +59,12 @@ export default {
 
                     this.carregando = false
                 }).catch(error => {
-                    if (error.response.data)
-                        this.mensagem.texto = error.response.data.message
-                    else 
-                        this.mensagem.texto = "Ocorreu um erro ao fazer login! Tente novamente mais tarde."
+                    this.$swal({
+                        title: 'Erro na busca de produtos!',
+                        html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
+                        icon: 'error',
+                    })
 
-                    this.mensagem.cor = "danger"
                     this.carregando = false
                 })
         },
@@ -192,7 +192,7 @@ export default {
                         <div class="col-md-3 col-4">Quantidade</div>
                     </div>
                 </div>
-                <div v-for="produto in (produtosFiltrados || produtos)" :key="produto.id" class="card shadow">
+                <div v-for="(produto, index) in produtosFiltrados" :key="produto.id" class="card shadow">
                     <div class="card-header p-0">
                         <button class="btn d-flex py-3 bg-bg btn-block text-left text-white"
                          data-toggle="collapse"
@@ -217,12 +217,14 @@ export default {
                                 </div>
                             </div>
                         </button>
-        
-                        <div class="collapse" :id="`collapse-${produto.id}`" data-parent="#accordion">
-                            <div class="card-body d-flex bg-bg-light text-white">
-                                <div class="col-md-6 col-4" data-toggle="tooltip" title="Categoria" data-placement="bottom">{{ nomeDaCategoria(produto.categoriaId) }}</div>
-                                <div class="col-md-3 col-4" data-toggle="tooltip" title="Fabricante" data-placement="bottom">{{ produto.fabricante }}</div>
-                                <div class="col-md-3 col-4" data-toggle="tooltip" title="Código EAN" data-placement="bottom">{{ produto.codigoEan }}</div>
+
+                        <div class="card-body p-0">
+                            <div class="collapse" :class="{ 'show': index == 0 }" :id="`collapse-${produto.id}`" data-parent="#accordion">
+                                <div class="card-body d-flex bg-bg-light text-white">
+                                    <div class="col-md-6 col-4" data-toggle="tooltip" title="Categoria" data-placement="bottom">{{ nomeDaCategoria(produto.categoriaId) }}</div>
+                                    <div class="col-md-3 col-4" data-toggle="tooltip" title="Fabricante" data-placement="bottom">{{ produto.fabricante }}</div>
+                                    <div class="col-md-3 col-4" data-toggle="tooltip" title="Código EAN" data-placement="bottom">{{ produto.codigoEan }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -230,16 +232,12 @@ export default {
             </div>
             
             <ScannerModal id='products-scanner' :active="scanner.active" :produtosEan="produtos.map(p => p.codigoEan)" @disable-scanner="scanner.active = false" @scanner-result-products="scanResultado"></ScannerModal>
-            <ProdutoModal v-bind="modalProduto" :fornecedores="fornecedores" :categorias="categorias" :userComponent="'ProductsView'" @produto-atualizado="handlerProdutoAtualizado" @produto-criado="handlerProdutoCriado"/>
+            <ProdutoModal v-bind="modalProduto" :produtos="produtos" :fornecedores="fornecedores" :categorias="categorias" :userComponent="'ProductsView'" @produto-atualizado="handlerProdutoAtualizado" @produto-criado="handlerProdutoCriado"/>
         </div>
     </section>
 </template>
 
 <style scoped>
-*, *::before, *::after {
-    transition: left 1s, visibility 1s, opacity 0.5s linear;
-}
-
 video {
     min-width: 100% !important;
 }
