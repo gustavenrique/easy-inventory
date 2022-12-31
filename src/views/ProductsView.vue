@@ -242,35 +242,6 @@ video {
     min-width: 100% !important;
 }
 
-.botao-ellipsis { display: none }
-
-@media (max-width: 560px) {
-    .botoes-produto-container {
-        display: block;
-        background-color: var(--blue-grey-dark);
-        padding: .5rem;
-        position: absolute;
-        left: -20px;
-        top: -5px;
-    }
-
-    .botoes-produto-container::after {
-        content: '';
-        position: absolute;
-        background-color: transparent;
-        top: 50%;
-        transform: translateY(-50%);
-        right: -10px;
-        border-top: 10px solid transparent;
-        border-bottom: 10px solid transparent;
-        border-left: 10px solid var(--blue-grey-dark);
-    }
-
-    .botao-ellipsis {
-        display: block;
-    }
-}
-
 @media (max-width: 460px) { .botoes-produto-container { left: -3rem; } }
 @media (max-width: 375px) { .botoes-produto-container { left: -5rem; } }
 </style>

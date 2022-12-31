@@ -39,6 +39,7 @@ export default {
                 }
 
                 cookies.set('username', this.formulario.username, '30MIN') // user cookie expires after 30min
+                cookies.set('userId', response.data.object, '30MIN')
                 this.$router.go()
                 this.$router.push(this.$route.query.redirect || '/')
             }).catch(error => {

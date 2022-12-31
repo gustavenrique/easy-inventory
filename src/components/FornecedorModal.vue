@@ -5,9 +5,6 @@ import { areObjectsEqual, AlertCancelamento } from '../assets/helper'
 export default {
     name: 'supplier-modal',
     props: [ 'fornecedor', 'fornecedorOriginal', 'modo', 'fornecedores' ],
-    data: () => ({
-
-    }),
     computed: {
         formularioFoiAlterado() {
             if (this.modo !== 'Editar') return false

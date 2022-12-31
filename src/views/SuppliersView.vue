@@ -97,7 +97,7 @@ export default {
             this.modalFornecedor.modo = 'Editar'
 
             this.modalFornecedor.fornecedor = {
-                id: fornecedor.id, nome: fornecedor.nome, email: fornecedor.email,  telefone: fornecedor.telefone
+                id: fornecedor.id, nome: fornecedor.nome, email: fornecedor.email, telefone: fornecedor.telefone
             }
 
             this.modalFornecedor.fornecedorOriginal = JSON.parse(JSON.stringify(this.modalFornecedor.fornecedor))
@@ -171,34 +171,3 @@ export default {
         </div>
     </section>
 </template>
-
-<style scoped>
-.botao-ellipsis { display: none }
-
-@media (max-width: 560px) {
-    .botoes-fornecedor-container {
-        display: block;
-        background-color: var(--blue-grey-dark);
-        padding: .5rem;
-        position: absolute;
-        left: -10px;
-        top: -5px;
-    }
-
-    .botoes-fornecedor-container::after {
-        content: '';
-        position: absolute;
-        background-color: transparent;
-        top: 50%;
-        transform: translateY(-50%);
-        right: -10px;
-        border-top: 10px solid transparent;
-        border-bottom: 10px solid transparent;
-        border-left: 10px solid var(--blue-grey-dark);
-    }
-
-    .botao-ellipsis {
-        display: block;
-    }
-}
-</style>
