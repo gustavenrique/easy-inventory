@@ -25,8 +25,8 @@ export default {
 
             return !acessoId && !usuario ? this.usuarios
                 : usuario && !acessoId ? this.usuarios.filter(u => u.usuario.toLowerCase().includes(usuario))
-                : acessoId && !usuario ? this.usuarios.filter(u => u.acessoId === acessoId)
-                : this.usuarios.filter(u => (u.acessoId === acessoId) && u.usuario.toLowerCase().includes(usuario))
+                : acessoId && !usuario ? this.usuarios.filter(u => u.acessos.includes(acessoId))
+                : this.usuarios.filter(u => (u.acessos.includes(acessoId)) && u.usuario.toLowerCase().includes(usuario))
         }
     },
     mounted() {
@@ -115,7 +115,9 @@ export default {
                 <div class="card shadow" v-for="usuario in (usuariosFiltrados || usuarios)" :key="usuario.id">
                     <div class="card-body p-0 d-flex py-3 bg-bg text-left text-white">
                         <div class="col-3 ellipsis">{{ usuario.usuario }}</div>
-                        <div class="col-3 ellipsis">{{ usuario.ativo }}</div>
+                        <div class="col-3 ellipsis">
+                            <i :class="`fa-solid ${ usuario.ativo ? 'fa-check' : 'fa-x'}`"></i>
+                        </div>
                         <div class="col-6 d-flex">
                             <p class="mr-3 ellipsis">{{ usuario.email }}</p>
                             
