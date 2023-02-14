@@ -59,9 +59,61 @@ export default {
                     this.carregando = false
                 })
         },
+        deletarUsuario(usuario) {
+            this.$swal({
+                title: 'Deletar usuário?',
+                text: `O usuário '${usuario.nome}' será deletado. Realmente deseja prosseguir?`,
+                icon: 'warning',
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                confirmButtonText: 'Deletar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    this.carregando = true
+
+                    console.log(usuario)
+
+                    axios.delete(`${this.$apiUrl}/usuarios/${usuario.id}`)
+                        .then(res => {
+                            if (res.status == 204) {
+                                this.$swal({
+                                    title: 'Sucesso!',
+                                    text: `O usuário '${usuario.usuario}' foi deletado com sucesso.`,
+                                    icon: 'success',
+                                    confirmButtonColor: '#37474f'
+                                })
+
+                                this.usuarios = this.usuarios.filter(p => p.id != usuario.id)
+                            }
+                            
+                            this.carregando = false
+                        }).catch(error => {
+                            this.$swal({
+                                title: 'Erro na deleção!',
+                                html: `Tente novamente mais tarde ou acione o suporte. </br> Erro: ${error}`,
+                                icon: 'error',
+                            })
+
+                            this.carregando = false
+                        })
+                },
+                allowOutsideClick: () => !this.$swal.isLoading()
+            })
+        },
         mostrarFormularioCriacao() {
             this.modalUsuario.modo = 'Criar'
             $("#modal-usuario").modal('show')
+        },
+        mostrarFormularioAlteracao(usuario) {
+            this.modalUsuario.modo = 'Editar'
+
+            this.modalUsuario.usuario = {
+                id: usuario.id, usuario: usuario.usuario, email: usuario.email, ativo: usuario.ativo, admin: usuario.admin, ativo: usuario.ativo, acessos: this.acessos.filter(a => usuario.acessos.includes(a.id))
+            }
+
+            this.modalUsuario.usuarioOriginal = JSON.parse(JSON.stringify(this.modalUsuario.usuario))
+
+            $('#modal-usuario').modal('show')
         },
         handlerUsuarioCriado(usuarioCriado) { this.usuarios.push(usuarioCriado) },
         handlerUsuarioAtualizado(usuarioAtualizado) { this.usuarios = this.usuarios.map(u => u.id == usuarioAtualizado.id ? usuarioAtualizado : u) },
@@ -129,7 +181,7 @@ export default {
                                 <button class="btn hover-button bg-bg-light" @click="deletarUsuario(usuario)">
                                     <i class="fa fa-trash text-white"></i>
                                 </button>
-                                |
+                                |   
                                 <button class="btn hover-button bg-bg-light" @click="mostrarFormularioAlteracao(usuario)">
                                     <i class="fa fa-pen text-white"></i>
                                 </button>

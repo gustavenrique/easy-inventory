@@ -66,6 +66,48 @@ export default {
                 this.carregando = false
             })
         },
+        atualizarUsuario() {
+            let usuarioRequest = { id: this.usuario.id, usuario: this.usuario.usuario, email: this.usuario.email, ativo: this.usuario.ativo, admin: this.usuario.admin, acessos: this.usuario.acessos.map(a => a.id) }
+
+            console.log(usuarioRequest)
+
+            axios.put(`${this.$apiUrl}/Usuarios`, usuarioRequest)
+            .then(res => {
+                $('#modal-usuario').modal('hide')
+
+                if (res.status == 204) {
+                    let u = this.usuario
+                    let usuarioAtualizado = {
+                        id: u.id, usuario: u.usuario, email: u.email, ativo: u.ativo, admin: u.admin, acessos: u.acessos
+                    }
+
+                    this.$emit('usuarioAtualizado', usuarioAtualizado)
+
+                    this.$swal({
+                        title: 'Sucesso!',
+                        text: `O usuário '${this.usuarioOriginal.nome}' foi atualizado com sucesso.`,
+                        icon: 'success',
+                        confirmButtonColor: '#37474f'
+                    })
+
+                    this.limparFormulario()
+                }
+                else {
+                    this.$swal({
+                        title: 'Ocorreu um erro!',
+                        text: `${res?.data?.message}`,
+                        icon: 'error',
+                        confirmButtonColor: '#37474f'
+                    })
+                }
+            }).catch(error => {
+                this.$swal({
+                    title: 'Erro na atualização!',
+                    html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
+                    icon: 'error',
+                })
+            })
+        },
         adminClickHandler() {
             if (this.usuario.acessos.length != this.acessos.length) {
                 this.isMultiselectDisabled = true

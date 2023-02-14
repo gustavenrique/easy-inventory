@@ -179,7 +179,6 @@ export default {
         
                         <div @click="blink" class="eye bg-secondary text-white align-items-center justify-content-center px-2 input-group-append">
                             <i :class="`fa-solid ${icon}`"></i>
-                            
                         </div>
                     </div>
                 </div>
