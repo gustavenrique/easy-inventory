@@ -71,8 +71,6 @@ export default {
                 preConfirm: () => {
                     this.carregando = true
 
-                    console.log(usuario)
-
                     axios.delete(`${this.$apiUrl}/usuarios/${usuario.id}`)
                         .then(res => {
                             if (res.status == 204) {

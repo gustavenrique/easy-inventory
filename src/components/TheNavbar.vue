@@ -8,7 +8,8 @@ export default {
     toggleAtivo: false,
   }),
   computed: {
-    userLoggedIn() { return cookies.get('username') }
+    userLoggedIn() { return cookies.get('username') },
+    usuarioAcessos() { return cookies.get('userAccess').split('%2C')[0].split(',') }
   },
   methods: {
     trocarDesignToggle() {
@@ -38,22 +39,22 @@ export default {
 
         <div class="collapse navbar-collapse justify-content-end" id="nav-collapse">
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item" v-if="usuarioAcessos.includes('1')">
                     <RouterLink class="m-1 nav-link navbar-link" to="/products">Produtos</RouterLink>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="usuarioAcessos.includes('2')">
                     <RouterLink class="m-1 nav-link navbar-link" to="/suppliers">Fornecedores</RouterLink>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="usuarioAcessos.includes('3')">
                   <RouterLink class="m-1 nav-link navbar-link" to="/orders">Pedidos</RouterLink>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="usuarioAcessos.includes('4')">
                   <RouterLink class="m-1 nav-link navbar-link" to="/users">Usuarios</RouterLink>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="usuarioAcessos.includes('5')">
                     <RouterLink class="m-1 nav-link navbar-link" to="/dashboard">Dashboard</RouterLink>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="usuarioAcessos.includes('6')">
                     <RouterLink class="m-1 nav-link navbar-link" to="/my-account">Sua Conta</RouterLink>
                 </li>
             </ul>

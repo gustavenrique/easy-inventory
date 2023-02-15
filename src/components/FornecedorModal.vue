@@ -122,8 +122,6 @@ export default {
         telefoneInputHandler(e) {
             var digits = e.target.value.match(/\d/g)?.join('')
 
-            console.log(digits)
-
             if (digits != null)
                 this.fornecedor.telefone = `+${digits.slice(0,2)} (${digits.slice(2,4)}) ${digits.slice(4,9)}-${digits.slice(9,13)}`
             else 

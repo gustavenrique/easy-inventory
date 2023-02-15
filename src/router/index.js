@@ -5,7 +5,7 @@ import cookies from 'vue-cookies'
 const routes = [
     {
       path: '/', alias: ['/home', '/products'], name: 'home', component: Home,
-      meta: { requireAuth: true }
+      meta: { requireAuth: true, id: 1 }
     },
     {
       path: '/login', name: 'login', component: () => import('../views/LoginView.vue'),
@@ -13,16 +13,21 @@ const routes = [
     },
     {
       path: '/users', name: 'users', component: () => import('../views/UsersView.vue'),
-      meta: { requireAuth: true }
+      meta: { requireAuth: true, id: 4 }
     },
     {
       path: '/suppliers', name: 'suppliers', component: () => import('../views/SuppliersView.vue'),
-      meta: { requireAuth: true }
+      meta: { requireAuth: true, id: 2 }
     },
     {
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('@/views/NotFound.vue'), 
+      meta: { requireAuth: true }
+    },
+    {
+      name: 'Forbidden',
+      component: () => import('@/views/Forbidden.vue'), 
       meta: { requireAuth: true }
     }
 ]
@@ -40,7 +45,14 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   if (to.meta.requireAuth && !cookies.get('username')) {
     return { path: '/login', query: { redirect: to.fullPath } }
-  } else if (to.meta.requireNoAuth && cookies.get('username')) {
+  }
+  
+  let usuarioAcessos = cookies.get('userAccess')?.split('%2C')[0]?.split(',')
+  
+  if (to.meta.id && !usuarioAcessos.includes(to.meta.id.toString()))
+    return { name: 'Forbidden', query: { attempt: to.fullPath } }
+  
+  if (to.meta.requireNoAuth && cookies.get('username')) {
     return { path: '/products' }
   }
 })

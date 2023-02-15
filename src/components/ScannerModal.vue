@@ -7,8 +7,6 @@ export default {
     props: ['active', 'produtosEan', 'userComponent'],
     methods: {
         decodeHandler(decode) {
-            console.log(decode);
-            
             if (this.produtosEan?.length > 0 && !this.produtosEan.includes(decode)) {
                 this.$swal({
                     title: 'Ops',

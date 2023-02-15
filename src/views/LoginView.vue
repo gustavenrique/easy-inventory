@@ -43,7 +43,8 @@ export default {
                 }
 
                 cookies.set('username', this.formulario.username, '30MIN') // user cookie expires after 30min
-                cookies.set('userId', response.data.object, '30MIN')
+                cookies.set('userId', response.data.object.usuarioId, '30MIN')
+                cookies.set('userAccess', response.data.object.usuarioAcessos, '30MIN')
                 this.$router.go()
                 this.$router.push(this.$route.query.redirect || '/')
             }).catch(error => {
@@ -54,7 +55,7 @@ export default {
                 
                 if (error?.response?.data?.statusCode == 412) {
                     this.formularioAlteracaoSenha.alterarSenha = true
-                    this.formularioAlteracaoSenha.usuarioId = error.response.data.object
+                    this.formularioAlteracaoSenha.usuarioId = error.response.data.object.usuarioId
                 }                    
                     
                 this.mensagem.cor = "danger"
@@ -90,19 +91,15 @@ export default {
                 }
 
                 cookies.set('username', this.formulario.username, '30MIN') // user cookie expires after 30min
-                cookies.set('userId', response.data.object, '30MIN')
+                cookies.set('userId', response.data.object.usuarioId, '30MIN')
+                cookies.set('userAccess', response.data.object.usuarioAcessos, '30MIN')
                 this.$router.go()
                 this.$router.push(this.$route.query.redirect || '/')
             }).catch(error => {
                 if (error?.response?.data)
                     this.mensagem.texto = error.response.data.message
                 else 
-                    this.mensagem.texto = "Ocorreu um erro ao alterar a senha. Tente novamente mais tarde."
-                
-                if (error?.response?.data?.statusCode == 412) {
-                    f.alterarSenha = true
-                    f.usuarioId = error.response.data.object
-                }                    
+                    this.mensagem.texto = "Ocorreu um erro ao alterar a senha. Tente novamente mais tarde."                    
                     
                 this.mensagem.cor = "danger"
             }).finally(() => {
