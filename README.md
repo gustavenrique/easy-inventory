@@ -5,6 +5,8 @@ In order to bulld the application, it was used essentially Vuejs for the front-e
 
 There is not yet a Stoquei mobile app version, despite that the app is pretty much responsive and mobile-friendly.
 
+If you want to see part of the project architecture, check out the [stoquei-api repo](https://github.com/gustavenrique/stoquei-api).
+
 ---
 ## Main features and pages
 

@@ -59,11 +59,19 @@ export default {
 
                     this.carregando = false
                 }).catch(error => {
-                    this.$swal({
-                        title: 'Erro na busca de produtos!',
-                        html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
-                        icon: 'error',
-                    })
+                    if (error?.response?.status != 404) {
+                        this.$swal({
+                            title: 'Erro na busca de produtos!',
+                            html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
+                            icon: 'error',
+                        })
+                    }
+
+                    if (error?.response?.data) {
+                        this.produtos = error?.response?.data?.object?.produtos
+                        this.categorias = error?.response?.data?.object?.categorias
+                        this.fornecedores = error?.response?.data?.object?.fornecedores
+                    }
 
                     this.carregando = false
                 })

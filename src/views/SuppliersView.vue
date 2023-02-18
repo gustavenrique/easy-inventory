@@ -41,11 +41,14 @@ export default {
 
                     this.carregando = false
                 }).catch(error => {
-                    this.$swal({
-                        title: 'Erro na busca de fornecedores!',
-                        html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
-                        icon: 'error',
-                    })
+
+                    if (error?.response?.status != 404) {
+                        this.$swal({
+                            title: 'Erro na busca de fornecedores!',
+                            html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
+                            icon: 'error',
+                        })
+                    }
 
                     this.carregando = false
                 })

@@ -51,7 +51,7 @@ export default {
                         confirmButtonColor: '#37474f'
                     })
 
-                    this.$emit('usuarioCriado', {id: res.data.object, usuario: this.usuario.usuario, email: this.usuario.email, acessos: this.usuario.acessos, admin: this.usuario.admin, ativo: this.usuario.ativo})
+                    this.$emit('usuarioCriado', {id: res.data.object, usuario: this.usuario.usuario, email: this.usuario.email, acessos: this.usuario.acessos.map(a => a.id), admin: this.usuario.admin, ativo: this.usuario.ativo})
                     this.limparFormulario()
                 }
 
@@ -83,7 +83,7 @@ export default {
 
                     this.$swal({
                         title: 'Sucesso!',
-                        text: `O usuário '${this.usuarioRequest.usuario}' foi atualizado com sucesso.`,
+                        text: `O usuário '${usuarioRequest.usuario}' foi atualizado com sucesso.`,
                         icon: 'success',
                         confirmButtonColor: '#37474f'
                     })

@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex flex-column align-items-center justify-content-center p-5">
         <p>Você não possui acesso a esta página. Tente ir para a 
-            <router-link to='/'>principal</router-link>
+            <router-link to='/products'>principal</router-link>
         </p>
 
         <img src="../assets/error403.webp" class="image mx-auto">

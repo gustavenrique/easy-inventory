@@ -50,11 +50,18 @@ export default {
 
                     this.carregando = false
                 }).catch(error => {
-                    this.$swal({
-                        title: 'Erro na busca de usuários!',
-                        html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
-                        icon: 'error',
-                    })
+                    if (error?.response?.status != 404) {
+                        this.$swal({
+                            title: 'Erro na busca de usuários!',
+                            html: `${error?.response?.data?.message ? error.response.data.message : `Tente novamente mais tarde ou acione o suporte.</br> Erro: ${error}`}`,
+                            icon: 'error',
+                        })
+                    }
+
+                    if (error?.response?.data) {
+                        this.usuarios = error?.response?.data?.object?.usuarios
+                        this.acessos = error?.response?.data?.object?.acessos
+                    }
 
                     this.carregando = false
                 })
@@ -62,7 +69,7 @@ export default {
         deletarUsuario(usuario) {
             this.$swal({
                 title: 'Deletar usuário?',
-                text: `O usuário '${usuario.nome}' será deletado. Realmente deseja prosseguir?`,
+                text: `O usuário '${usuario.usuario}' será deletado. Realmente deseja prosseguir?`,
                 icon: 'warning',
                 showCancelButton: true,
                 showLoaderOnConfirm: true,
