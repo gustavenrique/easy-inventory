@@ -5,30 +5,32 @@ In order to bulld the application, it was used essentially Vuejs for the front-e
 
 There is not yet a Stoquei mobile app version, despite that the app is pretty much responsive and mobile-friendly.
 
-## Main pages
-
-### Login
-![image](https://user-images.githubusercontent.com/81171856/219528081-60ae4698-ab92-4f8a-946a-f019532b2b1b.png)
-
-### Products
-![image](https://user-images.githubusercontent.com/81171856/219528859-e66af8e4-1a8d-49d5-a4d8-67fe6c834791.png)
-![image](https://user-images.githubusercontent.com/81171856/219529488-76c5ac55-ca27-4993-9822-81673c556a52.png)
-![image](https://user-images.githubusercontent.com/81171856/219529075-36608ed7-a211-480e-a038-7f6be85a2ec9.png)
-![image](https://user-images.githubusercontent.com/81171856/219529572-3b16e98a-6984-4874-a3d4-2191c09edc2f.png)
-![image](https://user-images.githubusercontent.com/81171856/219531423-324ab495-e54c-4f38-961c-92dc3a2b5b3e.png)
-
-
-### Suppliers
-![image](https://user-images.githubusercontent.com/81171856/219529204-1e903717-baf1-45ad-b3a3-a38a8787d110.png)
-![image](https://user-images.githubusercontent.com/81171856/219530426-da711fab-68aa-4b1c-9f1e-d693debc495a.png)
-
+---
+## Main features and pages
 
 ### Users
-![image](https://user-images.githubusercontent.com/81171856/219530196-1d7c6703-b663-4232-be04-b2d5b7e58d39.png)
-![image](https://user-images.githubusercontent.com/81171856/219530164-10da290d-3171-4210-8acf-49b7d6b30235.png)
-![image](https://user-images.githubusercontent.com/81171856/219530387-75c3204f-7225-4f58-b409-9a620269c69d.png)
+[users.webm](https://user-images.githubusercontent.com/81171856/219884582-7d376622-9465-4de1-b3f6-f1c213fbb10e.webm)
+
+### Email received
+[email.webm](https://user-images.githubusercontent.com/81171856/219884601-325b40be-eee4-4ccd-b2fb-307eb208859e.webm)
+
+### Login
+[login.webm](https://user-images.githubusercontent.com/81171856/219884603-12196ba5-2286-48db-95bb-09e8e5d17134.webm)
+
+### Forbidden and NotFound
+[forbidden and notfound.webm](https://user-images.githubusercontent.com/81171856/219884613-7f19290f-9e7d-4b6f-a068-63a92e1bb1f7.webm)
+
+### Suppliers
+[suppliers.webm](https://user-images.githubusercontent.com/81171856/219884623-0334cdc3-6d59-4fff-aa35-62b75815c124.webm)
+
+### Responsiveness
+[responsiveness.webm](https://user-images.githubusercontent.com/81171856/219884628-bb677dc4-f988-4f66-a312-554bb9b2fab6.webm)
+
+### Products
+[products.webm](https://user-images.githubusercontent.com/81171856/219884969-75c382a1-de9b-499c-8b8e-6d78875b1140.webm)
 
 
+---
 ## Possible improvements
 Obviously the app is far far away of perfection, so here it goes a couple of improvements it could be implemented in the future:
 - __Storage shared data using a state management library__: there is data used by multiple components in the application, like the api base url, and some user informations stored in cookies. Using Vuex or Pinia, for example, would facilitate and organize the access to it
