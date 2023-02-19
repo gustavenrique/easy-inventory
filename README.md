@@ -34,7 +34,7 @@ If you want to see part of the project architecture, check out the [stoquei-api 
 
 ---
 ## Possible improvements
-Obviously the app is far far away of perfection, so here it goes a couple of improvements it could be implemented in the future:
+Obviously the app is far far away from perfection, so here it goes a couple of improvements it might be implemented eventually:
 - __Storage shared data using a state management library__: there is data used by multiple components in the application, like the api base url, and some user informations stored in cookies. Using Vuex or Pinia, for example, would facilitate and organize the access to it
 - __Transform the navbar into a sidebar__: that would probably make the UI looks more like an enterprise tool
 - Add a logout button: currently the user needs to clear cookies in order to logout
